@@ -1,4 +1,5 @@
 import { ChatApiError, getErrorMessage, toChatError } from './chatErrors'
+import type { ChatMessage } from '../types/chat'
 
 export type ChatResponse = {
   reply: string
@@ -12,7 +13,10 @@ const REQUEST_TIMEOUT_MS = 60_000
 
 const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '')
 
-export async function sendChat(message: string): Promise<ChatResponse> {
+export async function sendChat(
+  message: string,
+  history: ChatMessage[] = [],
+): Promise<ChatResponse> {
   const trimmed = message.trim()
 
   if (!trimmed) {
@@ -26,7 +30,7 @@ export async function sendChat(message: string): Promise<ChatResponse> {
     const response = await fetch(`${API_BASE}/api/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: trimmed }),
+      body: JSON.stringify({ message: trimmed, messages: history }),
       signal: controller.signal,
     })
 

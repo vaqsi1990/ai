@@ -7,8 +7,16 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors());
-app.use(express.json());
+const corsOrigin = process.env.CORS_ORIGIN?.trim();
+
+app.use(
+  cors(
+    corsOrigin
+      ? { origin: corsOrigin }
+      : undefined,
+  ),
+);
+app.use(express.json({ limit: "1mb" }));
 
 const apiKey = process.env.OPENAI_API_KEY?.trim().replace(/^=+/, "");
 
@@ -18,6 +26,8 @@ if (!apiKey) {
 }
 
 const client = new OpenAI({ apiKey });
+
+const MAX_HISTORY_MESSAGES = 20;
 
 function mapOpenAIError(error) {
   const status = error?.status ?? 500;
@@ -40,6 +50,24 @@ function mapOpenAIError(error) {
   return { status, error: errorMessage };
 }
 
+function normalizeHistory(messages) {
+  if (!Array.isArray(messages)) return [];
+
+  return messages
+    .filter(
+      (item) =>
+        item &&
+        (item.role === "user" || item.role === "assistant") &&
+        typeof item.content === "string" &&
+        item.content.trim(),
+    )
+    .map((item) => ({
+      role: item.role,
+      content: item.content.trim(),
+    }))
+    .slice(-MAX_HISTORY_MESSAGES);
+}
+
 app.get("/health", (_req, res) => {
   res.json({ ok: true });
 });
@@ -55,14 +83,20 @@ app.post("/api/chat", async (req, res) => {
       });
     }
 
+    const history = normalizeHistory(req.body?.messages);
+    const openAiMessages = [
+      {
+        role: "system",
+        content:
+          "You are a helpful assistant. Answer clearly and concisely. Match the user's language when possible.",
+      },
+      ...history,
+      { role: "user", content: message },
+    ];
+
     const completion = await client.chat.completions.create({
       model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "user",
-          content: message,
-        },
-      ],
+      messages: openAiMessages,
     });
 
     const reply = completion.choices[0]?.message?.content?.trim();

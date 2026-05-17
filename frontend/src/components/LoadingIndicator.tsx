@@ -5,7 +5,7 @@ type LoadingIndicatorProps = {
 }
 
 export function LoadingIndicator({
-  label = 'Thinking…',
+  label = 'Думаю…',
 }: LoadingIndicatorProps) {
   return (
     <div

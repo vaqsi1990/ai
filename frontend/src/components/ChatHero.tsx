@@ -9,7 +9,7 @@ export function ChatHero() {
         What would you like to know?
       </h1>
       <p className="mt-4 max-w-md text-sm leading-relaxed text-[#8ba3bc]">
-        Use one of the most common prompts below or ask your own question
+        Ask your own question below
       </p>
     </header>
   )

@@ -56,7 +56,7 @@ export function ChatInputBar({
         }}
         disabled={disabled || isListening}
         readOnly={isListening}
-        placeholder={isListening ? 'Listening…' : placeholder}
+        placeholder={isListening ? 'Слушаю…' : placeholder}
         aria-label="Message"
         className="min-w-0 flex-1 bg-transparent text-[15px] text-white placeholder:text-[#5a7a9a] outline-none disabled:opacity-60"
       />

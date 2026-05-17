@@ -5,3 +5,8 @@ export type ChatEntry = {
   error: string | null
   status: 'loading' | 'success' | 'error'
 }
+
+export type ChatMessage = {
+  role: 'user' | 'assistant'
+  content: string
+}
