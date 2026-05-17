@@ -4,8 +4,20 @@ Monorepo: **React frontend** + **Express backend** + **OpenAI ChatGPT** + гол
 
 ---
 
+## Demo (Render)
+
+| | URL |
+|---|-----|
+| **Приложение (frontend)** | https://ai-1-dhlg.onrender.com |
+|
+
+Откройте ссылку приложения, введите сообщение и нажмите отправить. Первый запрос после простоя может занять до ~1 минуты (Free tier).
+
+---
+
 ## Содержание
 
+- [Demo (Render)](#demo-render)
 - [Возможности](#возможности)
 - [Стек](#стек)
 - [Структура](#структура)
@@ -219,6 +231,12 @@ npm run preview   # просмотр сборки
 ---
 
 ## Production
+
+**Текущий деплой:**
+
+- Frontend: https://ai-1-dhlg.onrender.com
+- Backend: https://ai-uadz.onrender.com
+- На Render (Static Site): `VITE_API_BASE_URL=https://ai-uadz.onrender.com`
 
 1. `cd frontend && npm run build`
 2. Разместить `frontend/dist` на хостинге
