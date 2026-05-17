@@ -2,11 +2,10 @@ import { type FormEvent, useCallback, useMemo, useState } from 'react'
 import { sendChat, toChatError } from '../api'
 import { useVoiceRecording } from '../hooks'
 import type { ChatEntry } from '../types/chat'
+import { ChatHero } from './ChatHero'
 import { ChatHistory } from './ChatHistory'
+import { ChatInputBar } from './ChatInputBar'
 import { ErrorAlert } from './ErrorAlert'
-import { MicrophoneButton } from './MicrophoneButton'
-import { SubmitButton } from './SubmitButton'
-import { TextInput } from './TextInput'
 
 function createEntryId(): string {
   return crypto.randomUUID()
@@ -34,11 +33,10 @@ export function MessageForm() {
     return text ? `${text.trimEnd()} ${interimTranscript}` : interimTranscript
   }, [text, isListening, interimTranscript])
 
-  const trimmed = text.trim()
+  const trimmed = inputValue.trim()
   const isLoading = history.some((entry) => entry.status === 'loading')
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+  async function submitMessage() {
     if (!trimmed || isLoading) return
 
     const entryId = createEntryId()
@@ -81,43 +79,40 @@ export function MessageForm() {
     }
   }
 
+  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    submitMessage()
+  }
+
   return (
-    <form onSubmit={handleSubmit} className="flex w-full flex-col gap-4">
-      <ChatHistory entries={history} />
-
-      <TextInput
-        value={inputValue}
-        onChange={setText}
-        disabled={isLoading || isListening}
-        placeholder={
-          isListening ? 'Говорите…' : 'Введите текст или нажмите микрофон...'
-        }
-        isRecording={isListening}
-      />
-
-      <div className="flex items-center justify-end gap-2">
-        <MicrophoneButton
-          isListening={isListening}
-          disabled={isLoading || !isSupported}
-          onClick={toggleListening}
-          title={
-            isSupported
-              ? isListening
-                ? 'Остановить запись'
-                : 'Записать голос (Web Speech API)'
-              : 'Голосовой ввод доступен в Chrome и Edge'
-          }
-        />
-        <SubmitButton disabled={!trimmed || isListening} loading={isLoading} />
+    <form
+      onSubmit={handleSubmit}
+      className="flex min-h-svh flex-col bg-[#001a33] text-white"
+    >
+      <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-5 pb-4 pt-8 md:px-10">
+        {history.length === 0 ? <ChatHero /> : null}
+        <ChatHistory entries={history} />
       </div>
 
-      {!isSupported && (
-        <p className="text-xs text-zinc-500">
-          Голосовой ввод через Web Speech API доступен в Chrome и Edge.
-        </p>
-      )}
+      <div className="sticky bottom-0 mx-auto w-full max-w-3xl px-5 pb-8 pt-2 md:px-10">
+        <ChatInputBar
+          value={inputValue}
+          onChange={setText}
+          onSubmit={submitMessage}
+          disabled={isLoading}
+          loading={isLoading}
+          isListening={isListening}
+          isMicSupported={isSupported}
+          onMicClick={toggleListening}
+          placeholder="Ask whatever you want"
+        />
 
-      {voiceError && <ErrorAlert message={voiceError} title="Голосовой ввод" />}
+        {voiceError && (
+          <div className="mt-3">
+            <ErrorAlert message={voiceError} title="Voice input" />
+          </div>
+        )}
+      </div>
     </form>
   )
 }

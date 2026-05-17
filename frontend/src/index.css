@@ -2,4 +2,10 @@
 
 body {
   margin: 0;
+  background-color: #001a33;
+  color: #ffffff;
+}
+
+#root {
+  min-height: 100svh;
 }

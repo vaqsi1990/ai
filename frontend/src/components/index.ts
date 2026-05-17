@@ -1,4 +1,7 @@
+export { BrandMark } from './BrandMark'
+export { ChatHero } from './ChatHero'
 export { ChatHistory } from './ChatHistory'
+export { ChatInputBar } from './ChatInputBar'
 export { ErrorAlert } from './ErrorAlert'
 export { LoadingIndicator } from './LoadingIndicator'
 export { MessageForm } from './MessageForm'
