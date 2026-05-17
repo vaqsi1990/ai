@@ -10,6 +10,8 @@ type ErrorBody = {
 
 const REQUEST_TIMEOUT_MS = 60_000
 
+const API_BASE = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '')
+
 export async function sendChat(message: string): Promise<ChatResponse> {
   const trimmed = message.trim()
 
@@ -21,7 +23,7 @@ export async function sendChat(message: string): Promise<ChatResponse> {
   const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
 
   try {
-    const response = await fetch('/api/chat', {
+    const response = await fetch(`${API_BASE}/api/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message: trimmed }),
